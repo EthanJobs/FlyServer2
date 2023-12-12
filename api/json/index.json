@@ -1,0 +1,24 @@
+{
+  "head": "json",
+  "api": [
+    {
+      "name": "account_login",
+      "method": "POST",
+      "query": [
+        { "name": "TI_no", "type": "String" },
+        { "name": "TI_password", "type": "String" },
+        { "name": "lastDate", "type": "String" }
+      ],
+      "sql": "select TI_name from teacherInformation where TI_no = ${TI_no} and TI_password = ${TI_password};"
+    },
+    {
+      "name": "account_query",
+      "method": "POST",
+      "query": [
+        { "name": "TI_no", "type": "String" },
+        { "name": "TI_password", "type": "String" }
+      ],
+      "sql": "select TI_no, TI_name, TI_title, TI_duties from teacherInformation where TI_no = ${TI_no} and TI_password = ${TI_password};"
+    }
+  ]
+}

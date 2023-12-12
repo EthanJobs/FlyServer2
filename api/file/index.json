@@ -1,0 +1,9 @@
+{
+  "head": "file",
+  "api": [
+    {
+      "name": "fileUpload",
+      "method": "POST"
+    }
+  ]
+}

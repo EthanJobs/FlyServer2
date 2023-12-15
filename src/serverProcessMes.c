@@ -9,7 +9,7 @@
 #include <coreDate.h>
 #include <coreJson.h>
 #include <coreMIME.h>
-#include <coreMesCntl.h>
+#include <serverMesCntl.h>
 #include <coreIterator.h>
 #include <serverProcessMes.h>
 #include <serverTaskQueuePool.h>
@@ -93,10 +93,11 @@ int processSQL(taskTreePoolValue *ttpv, APINode *an, Json *json, MYSQL *sqlConne
             tmp = sqlLen;
             sqlLen += i - index;
 
-            if (!index) sql = (char *)malloc(sizeof(char) * sqlLen);
-            else sql = (char *)realloc(sql, sizeof(char) * sqlLen);
+            if (!index) sql = (char *)malloc(sizeof(char) * sqlLen + 1);
+            else sql = (char *)realloc(sql, sizeof(char) * sqlLen + 1);
 
             strncpy(sql + tmp, an->n_sql + index, i - index);
+            sql[sqlLen] = '\0';
             index = i + 2;
 
             for (; i < strlen(an->n_sql); i++) {

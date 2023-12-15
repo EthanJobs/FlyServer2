@@ -11,6 +11,7 @@ taskTreePoolValue *taskTreePoolValue_init(int clientFd, int fileFd, int fileInde
     ttpv->n_clientFd = clientFd;
     ttpv->n_fileFd = fileFd;
     ttpv->n_fileIndex = fileIndex;
+    ttpv->n_freeData = NULL;
     ttpv->n_hh = hh;
 
     return ttpv;

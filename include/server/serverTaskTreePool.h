@@ -9,6 +9,7 @@ typedef struct taskTreePoolValue {
     int n_clientFd;
     int n_fileFd;
     int n_fileIndex;
+    void *n_freeData;
     HTTPHeader *n_hh;
 } taskTreePoolValue;
 

@@ -4,7 +4,7 @@
 #include <mysql/mysql.h>
 
 MYSQL *MYSQL_init(const char *host, const char *username, const char *password, const char *database, unsigned int timeout);
-void sendSqlRes(MYSQL *sqlConnection, const char *sql, int fd);
+int sendSqlRes(MYSQL *sqlConnection, const char *sql, int fd);
 MYSQL_RES *getSqlRes(MYSQL *sqlConnection, const char *sql);
 void MYSQL_free(MYSQL *sqlConnection);
 

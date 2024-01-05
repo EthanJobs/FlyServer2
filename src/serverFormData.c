@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include <serverFormData.h>
 
 FormDataValue *FormDataValue_init(char *name, int dataType, void *value) {

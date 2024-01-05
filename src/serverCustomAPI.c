@@ -6,12 +6,12 @@
 extern API *g_API;
 
 // TODO: file
-int file_fileUpload(taskTreePoolValue *ttpv, APINode *an, MYSQL *sqlConnection);
+int file_fileUpload(taskTreePoolNode *ttpn, APINode *an, MYSQL *sqlConnection);
 void file_API_init();
 
-int file_fileUpload(taskTreePoolValue *ttpv, APINode *an, MYSQL *sqlConnection) {
+int file_fileUpload(taskTreePoolNode *ttpn, APINode *an, MYSQL *sqlConnection) {
     char buf[1024];
-    read(ttpv->n_clientFd, buf, 1024);
+    read(ttpn->n_clientFd, buf, 1024);
     printf("%s\n", buf);
     return 0;
 }

@@ -1,50 +1,132 @@
-#include <serverTaskTreePool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <serverFormData.h>
+#include <serverTaskTreePool.h>
 
-int taskTreePoolValue_fun_compareValue(void *a, void *b);
-int taskTreePoolValue_fun_searchCompareValue(void *a, void *b);
+int taskTreePoolNode_fun_compareValue(void *a, void *b);
+int taskTreePoolNode_fun_searchValue(void *a, void *b);
 
-taskTreePoolValue *taskTreePoolValue_init(int clientFd, int fileFd, int fileIndex, HTTPHeader *hh) {
-    taskTreePoolValue *ttpv = (taskTreePoolValue *)malloc(sizeof(taskTreePoolValue));
+int taskTreePoolValueFormDataValue_fun_compareValue(void *a, void *b);
+int taskTreePoolValueFormDataValue_fun_searchValue(void *a, void *b);
 
-    ttpv->n_clientFd = clientFd;
-    ttpv->n_fileFd = fileFd;
-    ttpv->n_fileIndex = fileIndex;
-    ttpv->n_freeData = NULL;
-    ttpv->n_hh = hh;
-
-    return ttpv;
+int taskTreePoolNode_fun_compareValue(void *a, void *b) {
+    return ((taskTreePoolNode *)a)->n_clientFd - ((taskTreePoolNode *)b)->n_clientFd;
 }
 
-void taskTreePoolValue_free(void *a) {
+int taskTreePoolNode_fun_searchValue(void *a, void *b) {
+    return *(int *)a - ((taskTreePoolNode *)b)->n_clientFd;
+}
+
+int taskTreePoolValueFormDataValue_fun_compareValue(void *a, void *b) {
+    return ((FormDataValue *)a)->n_name - ((FormDataValue *)b)->n_name;
+}
+
+int taskTreePoolValueFormDataValue_fun_searchValue(void *a, void *b) {
+    return (char *)a - ((FormDataValue *)b)->n_name;
+}
+
+taskTreePoolValueGetFile *taskTreePoolValueGetFile_init(int fileFd, int fileIndex) {
+    taskTreePoolValueGetFile *ttpvGF = (taskTreePoolValueGetFile *)malloc(sizeof(taskTreePoolValueGetFile));
+
+    ttpvGF->n_fileFd = fileFd;
+    ttpvGF->n_fileIndex = fileIndex;
+
+    return ttpvGF;
+}
+
+void taskTreePoolValueGetFile_free(void *a) {
     if (a == NULL) return;
 
-    taskTreePoolValue *ttpv = (taskTreePoolValue *)a;
-    HTTPHeader_free(ttpv->n_hh);
-    free(ttpv);
+    taskTreePoolValueGetFile *ttpvGF = (taskTreePoolValueGetFile *)a;
+    if (ttpvGF->n_fileFd > 0) close(ttpvGF->n_fileFd);
+    free(ttpvGF);
+}
+
+taskTreePoolValueJson *taskTreePoolValueJson_init(Json *json) {
+    taskTreePoolValueJson *ttpvJ = (taskTreePoolValueJson *)malloc(sizeof(taskTreePoolValueJson));
+
+    ttpvJ->n_json = json;
+
+    return ttpvJ;
+}
+
+void taskTreePoolValueJson_free(void *a) {
+    if (a == NULL) return;
+
+    taskTreePoolValueJson *ttpvJ = (taskTreePoolValueJson *)a;
+    if (ttpvJ->n_json) Json_free(ttpvJ->n_json);
 
     return;
 }
 
-int taskTreePoolValue_fun_compareValue(void *a, void *b) {
-    return ((taskTreePoolValue *)a)->n_clientFd - ((taskTreePoolValue *)b)->n_clientFd;
+taskTreePoolValueFormData *taskTreePoolValueFormData_init() {
+    taskTreePoolValueFormData *ttpvFD = (taskTreePoolValueFormData *)malloc(sizeof(taskTreePoolValueFormData));
+
+    ttpvFD->n_formData = Tree_init(taskTreePoolValueFormDataValue_fun_compareValue, FormDataValue_free);
+    ttpvFD->n_cacheData = (char *)malloc(sizeof(char) * FORMDATACACHEDATASIZE);
+
+    return ttpvFD;
 }
 
-int taskTreePoolValue_fun_searchCompareValue(void *a, void *b) {
-    return *(int *)a - ((taskTreePoolValue *)b)->n_clientFd;
+void taskTreePoolValueFormData_free(void *a) {
+    if (a == NULL) return;
+
+    taskTreePoolValueFormData *ttpvFD = (taskTreePoolValueFormData *)a;
+    if (ttpvFD->n_formData) Tree_free(ttpvFD->n_formData);
+    if (ttpvFD->n_cacheData) free(ttpvFD->n_cacheData);
+
+    return;
+}
+
+taskTreePoolNode *taskTreePoolNode_init(int clientFd, int type, void *value, HTTPHeader *hh) {
+    taskTreePoolNode *ttpn = (taskTreePoolNode *)malloc(sizeof(taskTreePoolNode));
+
+    ttpn->n_clientFd = clientFd;
+    ttpn->n_type = type;
+    ttpn->n_value = value;
+    ttpn->n_hh = hh;
+
+    return ttpn;
+}
+
+void taskTreePoolNode_freeValue(taskTreePoolNode *ttpn) {
+    if (ttpn == NULL || ttpn->n_value == NULL) return;
+
+    if (ttpn->n_type == TASKTREEVALUEGETFILE) taskTreePoolValueGetFile_free(ttpn->n_value);
+    else if (ttpn->n_type == TASKTREEVALUEJSON) taskTreePoolValueJson_free(ttpn->n_value);
+    else if (ttpn->n_type == TASKTREEVALUEFORMDATA) taskTreePoolValueFormData_free(ttpn->n_value);
+
+    ttpn->n_type = TASKTREEVALUEEMPTY;
+    ttpn->n_value = NULL;
+
+    return;
+}
+
+void taskTreePoolNode_free(void *a) {
+    if (a == NULL) return;
+
+    taskTreePoolNode *ttpn = (taskTreePoolNode *)a;
+    if (ttpn->n_hh) HTTPHeader_free(ttpn->n_hh);
+    if (ttpn->n_type == TASKTREEVALUEGETFILE) taskTreePoolValueGetFile_free(ttpn->n_value);
+    else if (ttpn->n_type == TASKTREEVALUEJSON) taskTreePoolValueJson_free(ttpn->n_value);
+    else if (ttpn->n_type == TASKTREEVALUEFORMDATA) taskTreePoolValueFormData_free(ttpn->n_value);
+
+    free(ttpn);
+
+    return;
 }
 
 taskTreePool *taskTreePool_init() {
-    return TreePool_init(taskTreePoolValue_fun_compareValue, taskTreePoolValue_free);
+    return TreePool_init(taskTreePoolNode_fun_compareValue, taskTreePoolNode_free);
 }
 
-int taskTreePool_insert(taskTreePool *ttp, int clientFd, int fileFd, int fileIndex, HTTPHeader *hh) {
-    return TreePool_insert(ttp, (void *)taskTreePoolValue_init(clientFd, fileFd, fileIndex, hh));
+int taskTreePool_insert(taskTreePool *ttp, int clientFd, int type, void *value, HTTPHeader *hh) {
+    return TreePool_insert(ttp, (void *)taskTreePoolNode_init(clientFd, type, value, hh));
 }
 
-taskTreePoolValue *taskTreePool_get(taskTreePool *ttp, int clientFd) {
-    return TreePool_get(ttp, clientFd, taskTreePoolValue_fun_searchCompareValue);
+void *taskTreePool_get(taskTreePool *ttp, int clientFd) {
+    return TreePool_get(ttp, clientFd, taskTreePoolNode_fun_searchValue);
 }
 
 void taskTreePool_free(taskTreePool *ttp) {

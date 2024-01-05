@@ -16,7 +16,7 @@ typedef struct APINode {
     char *n_name;
     char *n_sql;
     Tree *n_query;
-    int (*fun_handle)(taskTreePoolValue *, struct APINode *, MYSQL *);
+    int (*fun_handle)(taskTreePoolNode *, struct APINode *, MYSQL *);
 } APINode;
 
 typedef struct API {

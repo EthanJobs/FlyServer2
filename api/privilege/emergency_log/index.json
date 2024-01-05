@@ -1,0 +1,24 @@
+{
+  "head": "privilege/emergency_pwd",
+  "api": [
+    {
+      "name": "device/list",
+      "method": "POST",
+      "query": [
+        { "name": "TI_no", "type": "String" },
+        { "name": "TI_password", "type": "String" },
+        { "name": "lastDate", "type": "String" }
+      ],
+      "sql": "select TI_name from teacherInformation where TI_no = ${TI_no} and TI_password = ${TI_password};"
+    },
+    {
+      "name": "device/apply",
+      "method": "POST",
+      "query": [
+        { "name": "TI_no", "type": "String" },
+        { "name": "TI_password", "type": "String" }
+      ],
+      "sql": "select TI_no, TI_name, TI_title, TI_duties from teacherInformation where TI_no = ${TI_no} and TI_password = ${TI_password};"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-#ifndef _SERVERFORMDATA_H
-#define _SERVERFORMDATA_H
+#ifndef _COREFORMDATA_H
+#define _COREFORMDATA_H
 
 #include <coreTree.h>
 

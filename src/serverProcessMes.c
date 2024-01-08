@@ -200,6 +200,7 @@ int processAPINode(taskTreePoolNode *ttpn, APINode *an, MYSQL *sqlConnection) {
         return 0;
     }
 
+    // 自定义数据处理
     if (an->fun_handle) return an->fun_handle(ttpn, an, sqlConnection);
 
     // 目前只支持HTTP1.0
@@ -211,6 +212,7 @@ int processAPINode(taskTreePoolNode *ttpn, APINode *an, MYSQL *sqlConnection) {
     // 判断返回类型
     char *contentType = HTTPHeader_getHeaderValue(ttpn->n_hh, "Content-Type");
 
+    // 分类数据处理
     if (!strncmp(contentType, CONTENTTYPEJSON, strlen(CONTENTTYPEJSON))) return processJson(ttpn, an, sqlConnection);
     else if (!strncmp(contentType, CONTENTTYPEFORMDATA, strlen(CONTENTTYPEFORMDATA))) return processFormData(ttpn, an, sqlConnection);
     else return 0;

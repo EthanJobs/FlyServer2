@@ -60,6 +60,14 @@ APINode *APINode_init(char *method, char *apiName, char *name, char *sql) {
     an->n_sql = sql;
     an->n_query = Tree_init(compareANToAN, queryNode_free);
     an->fun_handle = NULL;
+    an->fun_beforeVerify = NULL;
+    an->fun_verified = NULL;
+    an->fun_beforeProcess = NULL;
+    an->fun_processed = NULL;
+    an->fun_beforeHttpSend = NULL;
+    an->fun_httpSent = NULL;
+    an->fun_beforeDataSend = NULL;
+    an->fun_dataSent = NULL;
 
     return an;
 }

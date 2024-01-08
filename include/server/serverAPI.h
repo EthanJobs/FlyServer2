@@ -17,6 +17,14 @@ typedef struct APINode {
     char *n_sql;
     Tree *n_query;
     int (*fun_handle)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_beforeVerify)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_verified)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_beforeProcess)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_processed)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_beforeHttpSend)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_httpSent)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_beforeDataSend)(taskTreePoolNode *, struct APINode *, MYSQL *);
+    int (*fun_dataSent)(taskTreePoolNode *, struct APINode *, MYSQL *);
 } APINode;
 
 typedef struct API {

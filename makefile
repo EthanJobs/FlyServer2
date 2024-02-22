@@ -1,6 +1,6 @@
 CC = cc
-CFLAG = -I./include/core -I./include/server -g -D _D
-LIBFLAG = -L lib/ -lFlyUtil -lpthread -lmysqlclient
+CFLAG = -I./include/util -I./include/server -g -D _D
+LIBFLAG = -L lib/ -lFlyUtil -lpthread -lmysqlclient -ldl
 CPATH = ./src/
 OPATH = ./build/
 OUTPATH = ./bin/

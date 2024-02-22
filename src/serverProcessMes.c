@@ -9,12 +9,13 @@
 #include <coreDate.h>
 #include <coreJson.h>
 #include <coreMIME.h>
-#include <serverMesCntl.h>
 #include <coreIterator.h>
-#include <serverProcessMes.h>
-#include <serverTaskQueuePool.h>
-#include <serverTaskTreePool.h>
 #include <serverAPI.h>
+#include <serverMesCntl.h>
+#include <serverFormData.h>
+#include <serverProcessMes.h>
+#include <serverTaskTreePool.h>
+#include <serverTaskQueuePool.h>
 
 extern int g_epfd;
 extern taskQueuePool *g_tqp;
@@ -177,6 +178,11 @@ int processSQL(taskTreePoolNode *ttpn, APINode *an, Json *json, MYSQL *sqlConnec
 // FormData数据处理
 int processFormData(taskTreePoolNode *ttpn, APINode *an, MYSQL *sqlConnection) {
     printf("我读到了FormData\n");
+    FormData *formdata = FormData_init();
+
+    LOG_DBG("[SERVER]: Get %d FormData: \n", ttpn->n_clientFd);
+
+    return FormData_fd_init(formdata, ttpn->n_clientFd);
 }
 
 // json数据处理

@@ -12,14 +12,17 @@ typedef struct FormDataValue {
     void *n_value;
 } FormDataValue;
 
-typedef Tree FormData;
+typedef struct FormData {
+    char *n_boundary;
+    Tree *n_value;
+} FormData;
 
 FormDataValue *FormDataValue_init(char *name, int dataType, void *value);
 void FormDataValue_free(void *a);
 
 FormData *FormData_init();
 int FormData_fd_init(FormData *formdata, int fd);
-FormDataValue *FormData_getValue(FormData *formdata, char *name);
-void FormData_free(FormData *formdata);
+/* FormDataValue *FormData_getValue(FormData *formdata, char *name);
+void FormData_free(FormData *formdata); */
 
 #endif

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <serverFormData.h>
 
 FormDataValue *FormDataValue_init(char *name, int dataType, void *value) {
@@ -30,10 +31,22 @@ int compareStringToFDV(void *a, void *b) {
 }
 
 FormData *FormData_init() {
-    FormData *fromdata = Tree_init(compareFDVToFDV, FormDataValue_free);
+    FormData *fromdata = (FormData *)malloc(sizeof(FormData));
+    fromdata->n_value = Tree_init(compareFDVToFDV, FormDataValue_free);
+    fromdata->n_boundary = NULL;
+
     return fromdata;
 }
 
 int FormData_fd_init(FormData *formdata, int fd) {
-    
+    char buff[2048], tmp;
+
+    int state = read(fd, &tmp, 1);
+    write(1, &tmp, 1);
+
+    while (1) {
+        if (state <= 0) return 1;
+        state = read(fd, &tmp, 1);
+        write(1, &tmp, 1);
+    }
 }
